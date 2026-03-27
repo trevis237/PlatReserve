@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="PlatReserve.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:PlatReserve"
+    xmlns:views="clr-namespace:PlatReserve.Views"
+    Shell.FlyoutBehavior="Disabled"
+    Title="PlatReserve"
+    CurrentItem="{x:Reference loginView}">
+
+    <ShellContent Title="Login" ContentTemplate="{DataTemplate views:LoginPage}" Route="LoginPagee" 
+                  x:Name="loginView"
+                  />
+    <TabBar>
+        <ShellContent Title="Admin" ContentTemplate="{DataTemplate views:AdminPage}" Route="AdminDashboard" />
+        <ShellContent Title="Voyageur" ContentTemplate="{DataTemplate views:VoyageurDashboardPage}" Route="VoyageurDashboard" />
+    </TabBar>
+
+</Shell>

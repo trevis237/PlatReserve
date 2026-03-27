@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="PlatReserve.Droid/PlatReserve.Droid.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="PlatReserve.WinUI/PlatReserve.WinUI.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="PlatReserve/PlatReserve.csproj" />
+</Solution>

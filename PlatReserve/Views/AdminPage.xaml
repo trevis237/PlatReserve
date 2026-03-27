@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PlatReserve.Views.AdminPage"
+             xmlns:vm="clr-namespace:PlatReserve.ViewModels"
+             xmlns:model="clr-namespace:PlatReserve.Models"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    x:DataType="vm:AdminViewModel"
+             Title="TABLEAU D'ADMINISTRATION">
+
+    <ScrollView>
+        <Grid RowDefinitions="*,auto">
+            
+             <VerticalStackLayout Grid.Row="0"  Padding="20" Spacing="15">
+
+            <!-- SECTION RÉSUMÉ FINANCIER -->
+            <Label Text="Administration de PlatReserve" FontAttributes="Bold" FontSize="15"/>
+            <Border BackgroundColor="Gold" StrokeShape="RoundRectangle 10" Padding="15">
+                <VerticalStackLayout HorizontalOptions="Center">
+                    <Label Text="REVENUS TOTAUX" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <!-- Binding vers RevenueTotal du ViewModel -->
+                    <Label Text="{Binding RevenueTotal, StringFormat='{0:F0} FCFA'}" 
+                           FontSize="28" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <!-- Binding vers TotalBilletsVendus du ViewModel -->
+                    <Label Text="{Binding TotalBilletsVendus, StringFormat='Tickets vendus : {0}'}" 
+                           HorizontalOptions="Center"/>
+                    <Label Text="{Binding LesReservations.Count, StringFormat='{0} passagers inscrits'}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <BoxView HeightRequest="1" Color="Gray"/>
+
+            <!-- SECTION AJOUT BUS -->
+            <Label Text="🚌 AJOUTER UN NOUVEAU BUS" FontAttributes="Bold" FontSize="18"/>
+
+            <!-- On lie l'agence car un bus appartient à une agence en V2 -->
+            
+            
+            <!--<Picker Title="Choisir l'agence propriétaire"
+                    ItemsSource="{Binding ListeDesAgences}"
+                    ItemDisplayBinding="{Binding Nom}"
+                    SelectedItem="{Binding AgenceSelectionnee}" />-->
+            <Entry Placeholder="Nom de l'agence propriétaire" 
+                   Text="{Binding AgenceConcernee.Nom}" />
+
+            <Entry Placeholder="Numero de la licence" 
+                   Text="{Binding AgenceConcernee.NumeroLicence}"  />
+
+
+            <Entry Placeholder="Immatriculation (ex: LT 123)" 
+                   Text="{Binding BusImmatriculation}" />
+
+                <Entry Placeholder="Capacité du bus (ex: 50 plcs)" 
+                   Text="{Binding BusPlaces}" />
+
+            <!-- Commande liée au ViewModel (plus de Clicked !) -->
+            <Button Text="Enregistrer le Bus" 
+                    Command="{Binding AjouterBusCommand}" 
+                    BackgroundColor="DarkBlue" TextColor="White"/>
+
+            <BoxView HeightRequest="1" Color="Gray"/>
+
+            <!-- SECTION CRÉATION TRAJET -->
+            <Label Text="🗺️ CRÉER UN TRAJET" FontAttributes="Bold" FontSize="18"/>
+
+            <Entry Placeholder="Ville de Départ" Text="{Binding TrajetDepart}" />
+            <Entry Placeholder="Ville d'Arrivée" Text="{Binding TrajetArrivee}" />
+            <Entry Placeholder="Prix du voyage (FCFA)" Text="{Binding TrajetPrix}" Keyboard="Numeric" />
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10">
+                <Label Grid.Row="0" Grid.Column="0" Text="Départ :" Margin="0,5"/>
+                <DatePicker Grid.Row="1" Grid.Column="0" Date="{Binding DateDepart, Mode=TwoWay}" />
+                <TimePicker Grid.Row="1" Grid.Column="1" Time="{Binding HeureDepart, Mode=TwoWay}" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10">
+                <Label Grid.Row="0" Grid.Column="0" Text="Arrivée prévue :" Margin="0,5"/>
+                <DatePicker Grid.Row="1" Grid.Column="0" Date="{Binding DateArrivee, Mode=TwoWay}" />
+                <TimePicker Grid.Row="1" Grid.Column="1" Time="{Binding HeureArrivee, Mode=TwoWay}" />
+            </Grid>
+
+            <Label Text="Sélectionner un Bus pour ce trajet :" Margin="0,10,0,0"/>
+            <Picker Title="Choisir un véhicule" 
+                    ItemsSource="{Binding ListeDesBus}" 
+                    ItemDisplayBinding="{Binding Immatriculation}"
+                    SelectedItem="{Binding BusSelectionne}" />
+
+            <Button Text="Créer le Trajet" 
+                    Command="{Binding AjouterTrajetCommand}" 
+                    BackgroundColor="DarkGreen" TextColor="White"/>
+
+            <BoxView HeightRequest="1" Color="Gray"/>
+
+            <!-- SECTION LISTE DES ENCAISSEMENTS -->
+            <Label Text="💰 DERNIERS PAIEMENTS REÇUS" FontAttributes="Bold" FontSize="18"/>
+            <CollectionView ItemsSource="{Binding ListeDesPaiements}">
+                <CollectionView.ItemTemplate>
+                    <!-- Le DataType ici change : c'est un Paiement -->
+                    <DataTemplate x:DataType="model:Paiement">
+                        <Border Margin="0,5" Padding="10" Stroke="LightGray">
+                            <HorizontalStackLayout Spacing="10">
+                                <Label Text="💸" VerticalOptions="Center" FontSize="20"/>
+                                <VerticalStackLayout>
+                                    <!-- On remonte vers la réservation pour avoir le nom du voyageur -->
+                                    <Label Text="{Binding ReservationAssociee.Voyageur.Nom, StringFormat='Client: {0}'}" FontAttributes="Bold"/>
+                                    <Label Text="{Binding Methode, StringFormat='Via: {0}'}" FontSize="12"/>
+                                    <Label Text="{Binding Montant, StringFormat='Montant: {0} FCFA'}" TextColor="Green" FontAttributes="Bold"/>
+                                </VerticalStackLayout>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+
+            <!-- SECTION GESTION (INVENTAIRE) -->
+            <Grid Grid.Row="1" Padding="20" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="10" ColumnSpacing="10">
+
+                <!-- 1. LISTE DES BUS ENREGISTRÉS -->
+                <Label Grid.Row="0" Text="📋 INVENTAIRE DES BUS" FontAttributes="Bold" FontSize="18" TextColor="DarkBlue"/>
+                <CollectionView Grid.Row="1" ItemsSource="{Binding ListeDesBus}" HeightRequest="200" EmptyView="Aucun bus enregistré.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:Bus">
+                            <Border Margin="0,5" Padding="10" Stroke="Gray" StrokeShape="RoundRectangle 5">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <VerticalStackLayout Grid.Column="0">
+                                        <Label Text="{Binding Immatriculation}" FontAttributes="Bold" FontSize="16"/>
+                                        <Label Text="{Binding AgenceProprietaire.Nom, StringFormat='Agence: {0}'}" FontSize="12" TextColor="Gray"/>
+                                        <Label Text="{Binding NombreDePlaces, StringFormat='Capacité: {0} places'}" FontSize="12"/>
+                                    </VerticalStackLayout>
+
+                                    <!-- Bouton Supprimer Bus -->
+                                    <Button Grid.Column="1" Text="🗑️" BackgroundColor="Red" CornerRadius="20" WidthRequest="45"
+                                          Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminViewModel}}, Path=SupprimerBusCommand}"
+                                          CommandParameter="{Binding .}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- 2. LISTE DES TRAJETS EN COURS -->
+                <Label Grid.Row="2" Text="📅 PLANNING DES TRAJETS" FontAttributes="Bold" FontSize="18" TextColor="DarkGreen" Margin="0,15,0,0"/>
+                <CollectionView Grid.Row="3" ItemsSource="{Binding ListeDesTrajets}" HeightRequest="250" EmptyView="Aucun trajet programmé.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:Trajet">
+                            <Border Margin="0,5" Padding="10" Stroke="Gray" StrokeShape="RoundRectangle 5">
+                                <Grid ColumnDefinitions="*, Auto" RowSpacing="5" ColumnSpacing="10">
+                                    <!-- Correction ici -->
+                                    <VerticalStackLayout Grid.Column="0">
+                                        <Label Text="{Binding Depart}" FontAttributes="Bold" FontSize="16"/>
+                                        <!-- Correction TextColor ici 👇 -->
+                                        <Label Text="{Binding Arrivee, StringFormat='Agence: {0}'}" 
+               FontSize="12" TextColor="Gray"/>
+                                        <Label Text="{Binding Prix}" FontSize="12"/>
+                                        <Label Text="{Binding DateDepart}" FontSize="12"/>
+                                    </VerticalStackLayout>
+
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="5">
+                                        <!-- Bouton Modifier Trajet -->
+                                        <Button Text="📝" BackgroundColor="Orange" CornerRadius="20" WidthRequest="45"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminViewModel}}, Path=ModifierTrajetCommand}"
+                                              CommandParameter="{Binding .}" />
+                                        <!-- Bouton Supprimer Trajet -->
+                                        <Button Text="🗑️" BackgroundColor="Red" CornerRadius="20" WidthRequest="45"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminViewModel}}, Path=SupprimerTrajetCommand}"
+                                              CommandParameter="{Binding .}" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Grid>
+    </ScrollView>
+</ContentPage>                                                                                      

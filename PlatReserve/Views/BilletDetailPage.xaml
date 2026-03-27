@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PlatReserve.ViewModels"
+             x:Class="PlatReserve.Views.BilletDetailPage"
+             BackgroundColor="#F5F5F5"
+             Title="Mon Ticket">
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="25">
+
+            <!-- 1. HEADER DU BILLET -->
+            <VerticalStackLayout HorizontalOptions="Center" Spacing="5">
+                <Label Text="BILLET ÉLECTRONIQUE" 
+                       FontSize="24" 
+                       FontAttributes="Bold" 
+                       TextColor="#512BD4" />
+                <Label Text="Présentez ce QR Code à l'embarquement" 
+                       FontSize="12" 
+                       TextColor="Gray" 
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <!-- 2. LE CORPS DU BILLET (Le cadre blanc) -->
+            <Border Margin="0,5" Stroke="Transparent" StrokeShape="RoundRectangle 15"
+                BackgroundColor="White"
+                   Padding="0">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="5,5" Radius="10" Opacity="0.5" />
+                </Border.Shadow>
+
+                <VerticalStackLayout>
+                    <!-- Entête Agence -->
+                    <BoxView HeightRequest="10" Color="#512BD4" />
+
+                    <VerticalStackLayout Padding="20" Spacing="15">
+
+                        <!-- Agence -->
+                        <Label Text="{Binding BilletSelectionne.InfoReservation.TrajetConcerne.BusAssigne.AgenceProprietaire.Nom, FallbackValue='AGENCE DE TRANSPORT'}" 
+                               FontSize="18" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center" 
+                               TextColor="Black" />
+
+                        <BoxView HeightRequest="1" Color="#EEEEEE" />
+
+                        <!-- Trajet (Villes) -->
+                        <Grid ColumnDefinitions="*, Auto, *" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                                <Label Text="DÉPART" FontSize="10" TextColor="Gray" HorizontalOptions="Center"/>
+                                <Label Text="{Binding BilletSelectionne.InfoReservation.TrajetConcerne.Depart}" 
+                                       FontSize="20" FontAttributes="Bold" TextColor="#512BD4" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="1" Text="➔" FontSize="24" TextColor="#512BD4" VerticalOptions="Center" />
+
+                            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                                <Label Text="ARRIVÉE" FontSize="10" TextColor="Gray" HorizontalOptions="Center"/>
+                                <Label Text="{Binding BilletSelectionne.InfoReservation.TrajetConcerne.Arrivee}" 
+                                       FontSize="20" FontAttributes="Bold" TextColor="#512BD4" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Informations de Temps -->
+                        <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="10" Padding="0,10">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="DATE DE DÉPART" FontSize="10" TextColor="Gray" />
+                                <Label Text="{Binding BilletSelectionne.InfoReservation.TrajetConcerne.DateDepart, StringFormat='{0:dd/MM/yyyy}'}" 
+                                       FontAttributes="Bold" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" HorizontalOptions="End">
+                                <Label Text="HEURE" FontSize="10" TextColor="Gray" />
+                                <Label Text="{Binding BilletSelectionne.InfoReservation.TrajetConcerne.DateDepart, StringFormat='{0:HH:mm}'}" 
+                                       FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Ligne de séparation en pointillés (Simulée) -->
+                        <BoxView HeightRequest="1" Color="Gray" Margin="0,5" StyleId="DashedLine" />
+
+                        <!-- Référence et Prix -->
+                        <Grid ColumnDefinitions="*, *">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="RÉFÉRENCE" FontSize="10" TextColor="Gray" />
+                                <Label Text="{Binding BilletSelectionne.ReferenceBillet}" 
+                                       TextColor="Black" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" HorizontalOptions="End">
+                                <Label Text="PRIX PAYÉ" FontSize="10" TextColor="Gray" />
+                                <Label Text="{Binding BilletSelectionne.InfoReservation.TrajetConcerne.Prix, StringFormat='{0:N0} FCFA'}" 
+                                       TextColor="Green" FontAttributes="Bold" FontSize="18" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- Bas du billet (Décoration) -->
+                    <BoxView HeightRequest="10" Color="#512BD4" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- 3. ACTIONS D'ANNULATION -->
+            <VerticalStackLayout Spacing="10" Margin="0,10">
+                <!-- Le bouton n'apparaît que si l'annulation est possible -->
+                <Button Text="ANNULER MA RÉSERVATION"
+                        Command="{Binding AnnulerReservationCommand}"
+                        IsVisible="{Binding AfficherBoutonAnnuler}"
+                        BackgroundColor="White"
+                        TextColor="Red"
+                        BorderColor="Red"
+                        BorderWidth="1"
+                        CornerRadius="10"
+                        HeightRequest="50" />
+
+                <!-- Message d'erreur si délai dépassé -->
+                <Frame BackgroundColor="#FFEBEB" 
+                       BorderColor="#FFCDCD"
+                       IsVisible="{Binding AfficherBoutonAnnuler, Converter={StaticResource InvertedBoolConverter}}"
+                       Padding="10" CornerRadius="10">
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Label Text="⚠️" />
+                        <Label Text="Annulation impossible (Délai de 24h dépassé)" 
+                               TextColor="#D8000C" 
+                               FontSize="12" 
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

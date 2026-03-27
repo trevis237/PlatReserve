@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PlatReserve.Views.LoginPage"
+             Title="Bienvenue sur BusApp"
+             xmlns:models="clr-namespace:PlatReserve.Models"
+             xmlns:vm="clr-namespace:PlatReserve.ViewModels"
+             x:DataType="vm:LoginViewModel">
+
+    <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+
+        <Label Text="Connexion" FontSize="30" FontAttributes="Bold" HorizontalOptions="Center" />
+
+        <Entry x:Name="EntryPhone" 
+       Placeholder="Téléphone" 
+       Keyboard="Telephone" />
+
+        <Entry x:Name="EntryPassword" 
+       Placeholder="Mot de passe" 
+       IsPassword="True" />
+
+        <Button Text="Se Connecter" Clicked="OnLoginClicked" BackgroundColor="Blue" TextColor="White" />
+
+        <!-- Un lien pour aller vers la page d'inscription -->
+        <Button Text="Pas de compte ? S'inscrire ici" Clicked="OnGoToSignupClicked" BackgroundColor="Transparent" TextColor="Gray" />
+
+    </VerticalStackLayout>
+</ContentPage>
